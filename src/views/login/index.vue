@@ -1,7 +1,12 @@
 <template>
   <div class="login-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" title="登录" />
+    <van-nav-bar class="page-nav-bar" title="登录" @click-left="backPrePage">
+      <!-- 退出按钮插槽 -->
+      <template #left>
+        <van-icon name="cross" />
+      </template>
+    </van-nav-bar>
     <!-- /导航栏 -->
 
     <!-- 登录表单 -->
@@ -78,6 +83,11 @@ export default {
     };
   },
   methods: {
+    //返回上一页面
+    backPrePage() {
+      console.log(this);
+      this.$router.back();
+    },
     // 登录
     async onSubmit() {
       const user = this.user;
@@ -99,6 +109,8 @@ export default {
           this.$toast.fail("登录失败，请稍后重试");
         }
       }
+
+      //登录成功之后存储token，在vuex中
     },
     // 发送验证码
     async onSendSms() {
@@ -133,9 +145,17 @@ export default {
 </script>
 <style scoped lang="less">
 .login-container {
-  .toutiao {
-    font-size: 37px;
+  :deep(.van-nav-bar__title) {
+    color: #fff;
   }
+  // x号样式
+  .van-icon-cross {
+    color: #fff;
+  }
+  .toutiao {
+    font-size: 50px;
+  }
+  //验证码按钮
   .send-sms-btn {
     padding: 0; // 原有button 带有 padding 需要清除
     width: 152px;
@@ -145,6 +165,7 @@ export default {
     font-size: 22px;
     color: #666;
   }
+  //登录按钮
   .login-btn-wrap {
     padding: 53px 33px;
     .login-btn {

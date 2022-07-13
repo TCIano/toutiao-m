@@ -5,7 +5,12 @@ module.exports = {
     // },
     "postcss-pxtorem": {
       rootValue: (module) => {
-        /vant/gi.test(module.file) ? 37.5 : 75;
+        // /vant/gi.test(module.file) ? 37.5 : 75;
+        if (/vant/gi.test(module.file)) {
+          return 37.5;
+        } else {
+          return 75;
+        }
       },
       propList: ["*"],
     },

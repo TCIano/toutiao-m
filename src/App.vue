@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- <van-nav-bar title="黑马头条" /> -->
-
+    <!-- 一级路由 -->
     <router-view />
   </div>
 </template>
@@ -12,4 +12,4 @@ export default {
 };
 </script>
 
-<style scoped ></style>
+<style scoped></style>

@@ -1,6 +1,11 @@
 //导入封装的axios模块
 import request from "@/utils/request";
 //封装登录请求
+/**
+ *
+ * @param {Object} data //手机号和验证码的集合
+ * @returns Promise
+ */
 export const login = (data) => {
   return request({
     method: "POST",
