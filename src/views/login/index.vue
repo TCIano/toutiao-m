@@ -15,13 +15,13 @@
         name="mobile"
         placeholder="请输入手机号"
         v-model="user.mobile"
-        :rules="userFormRules.mobile"
+        :rules="mobile"
         type="number"
         maxlength="11"
       >
         <i slot="left-icon" class="toutiao toutiao-shouji"></i>
       </van-field>
-      <van-field name="code" placeholder="请输入验证码" v-model="user.code">
+      <van-field name="code" placeholder="请输入验证码" v-model="user.code" :rules="code">
         <i class="toutiao toutiao-yanzhengma" slot="left-icon"></i>
 
         <template #button>
@@ -54,10 +54,12 @@
       </div>
     </van-form>
     <!-- /登录表单 -->
+   
   </div>
 </template>
 <script>
 import { login, validateCode } from "@/api/user";
+import {mobile,code} from './rules'
 export default {
   name: "LoginIndex",
   data() {
@@ -68,17 +70,8 @@ export default {
         code: "",
       },
       // 验证规则
-      userFormRules: {
-        mobile: [
-          { required: true, message: "不能为空" },
-          { pattern: /^(?:(?:\+|00)86)?1\d{10}$/, message: "手机号格式错误" },
-        ],
-        code: [
-          { required: true, message: "验证码不能为空" },
-          { pattern: /^\d{6}$/, message: "验证码格式错误" },
-        ],
-      },
-
+      mobile,
+      code,
       isCountDownShow: false, // 控制显示 和隐藏
     };
   },
@@ -91,6 +84,7 @@ export default {
     // 登录
     async onSubmit() {
       const user = this.user;
+      //登录加载
       this.$toast.loading({
         forbidClick: true, // 是否禁止背景点击
         message: "登录中...", // 提示消息
@@ -100,11 +94,17 @@ export default {
       try {
         const res = await login(user);
         console.log(res);
+        //用vuex存储token
+        this.$store.commit('setUser',res.data.data)
+        //跳转页面
+        this.$router.push('/profile')
         // 登录成功
         this.$toast.success("登录成功"); // 关闭之前加载的toast
       } catch (error) {
+        // console.log(error);
+        //  状态码判断
         if (error.response.status === 400) {
-          this.$toast.fail("手机号或验证码错误");
+          this.$toast.fail(error.response.data.message);
         } else {
           this.$toast.fail("登录失败，请稍后重试");
         }
@@ -119,28 +119,31 @@ export default {
         console.log(this.$refs);
         // 拿到表单内容进行验证
         await this.$refs.loginForm.validate("mobile");
-        console.log("验证通过");
+        // console.log("验证通过");
+         await validateCode(this.user.mobile);
+        // this.$toast("发送成功", res);
+        // 2. 验证通过，显示倒计时
+        this.isCountDownShow = true;
       } catch (error) {
-        return console.log("验证失败", error);
-      }
-      // 2. 验证通过，显示倒计时
-      this.isCountDownShow = true;
-      try {
-        // 验证通过发送验证码
-        const res = await validateCode(this.user.mobile);
-        this.$toast("发送成功", res);
-      } catch (error) {
+        // return console.log("验证失败", error);
         // 发送失败开始倒计时
         this.isCountDownShow = false;
-        if (error.data.status === 429) {
-          this.$toast("请求太频繁，请稍后再试");
-        } else {
-          this.$toast("请求验证码失败");
+        //表单验证失败
+        if(!error.response){
+          this.$toast.fail('手机号格式不正确')
+        }else {
+          //验证码发送失败
+          const status = error.response.status
+          if(status == 404||status==429){
+            this.$toast.fail(error.response.data.message)
+          }
         }
+      
+    
       }
     },
   },
-  created() {},
+ 
 };
 </script>
 <style scoped lang="less">

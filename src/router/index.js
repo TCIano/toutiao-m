@@ -3,10 +3,10 @@ import VueRouoter from "vue-router";
 Vue.use(VueRouoter);
 
 const routes = [
-  // {
-  //   path: "/",
-  //   redirect: "/login",
-  // },
+  {
+    path: "/",
+    redirect: "/login",
+  },
   {
     path: "/login",
     name: "login",
