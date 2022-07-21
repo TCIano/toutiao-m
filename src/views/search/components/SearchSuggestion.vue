@@ -1,7 +1,7 @@
 <template>
   <div>
     <van-cell 
-   
+   @click="selectSugestion(searchSuggestion[index])"
     v-for="item,index in hightLightDate" 
     :key="index"
     >
@@ -48,6 +48,13 @@ export default {
     //   console.log(options);
       this.searchSuggestion = options.filter(Boolean)
     },
+    //点击搜索建议覆盖输入框
+    selectSugestion(suggestion){
+      this.$emit('selectSugestion', suggestion)
+      // if(this.$store.state.searchHistory.indexOf(suggestion) !== -1){
+        this.$store.commit('setSearchHistory',suggestion)
+      // }
+    }
   },
   computed:{
     //计算属性来实现渲染关键字的样式,覆盖原来的数据

@@ -21,6 +21,7 @@
           v-for="item in articleList"
           :key="item.art_id"
           :articleInfo="item"
+          
         ></Articleitem>
       </van-list>
     </van-pull-refresh>

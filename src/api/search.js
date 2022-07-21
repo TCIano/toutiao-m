@@ -13,3 +13,21 @@ export const getSearchSuggestion = (q) => {
     },
   });
 };
+
+/**
+ *
+ * @param {Number} page 页数
+ * @param {Number} per_page 每页数量
+ * @param {String} q  搜索关键词
+ * @returns
+ */
+export const getSearchResults = (page, per_page, q) => {
+  return request({
+    url: "/v1_0/search",
+    params: {
+      page,
+      per_page,
+      q,
+    },
+  });
+};

@@ -1,10 +1,10 @@
 <template>
   <div>
     <!-- 无图片 -->
-     <van-cell v-if="articleInfo.cover.type === 0" :title="articleInfo.title"  :label="articleDesc"/>
+     <van-cell v-if="articleInfo.cover.type === 0" :title="articleInfo.title"  :label="articleDesc" :to="`/detail/${articleInfo.art_id}`" @click="storageArticleId(articleInfo.art_id)"/>
 
     <!-- 一张 图片 -->
-     <van-cell v-if="articleInfo.cover.type === 1" :title="articleInfo.title" :label="articleDesc" >
+     <van-cell v-if="articleInfo.cover.type === 1" :title="articleInfo.title" :label="articleDesc" :to="`/detail/${articleInfo.art_id}`" @click="storageArticleId(articleInfo.art_id)">
         <van-image
         width="3rem"
         height="2rem"
@@ -14,7 +14,7 @@
 
 
     <!-- 三张 图片 -->
-     <van-cell v-if="articleInfo.cover.type === 3"   :title="articleInfo.title" >
+     <van-cell v-if="articleInfo.cover.type === 3"   :title="articleInfo.title" :to="`/detail/${articleInfo.art_id}`" @click="storageArticleId(articleInfo.art_id)">
         <!-- 自定义 内容插槽 -->
         <template #label>
              <van-image
@@ -48,7 +48,13 @@ export default {
             const relativeTime = dayjs(info.pubdate).fromNow()
             return `${info.aut_name}   ${info.comm_count}评论  ${relativeTime}`
         }
-    }
+    },
+    methods: {
+        storageArticleId(id){
+            //把点击文章的Id存到本地
+            this.$store.commit('setArticleId',id)
+        }
+    },
 }
 </script>
 

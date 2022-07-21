@@ -35,6 +35,14 @@ const routes = [
     path: "/search",
     component: () => import("@/views/search"),
   },
+  {
+    path: `/detail/:id`, //占位符 用冒号
+    component: () => import("@/views/Home/ArticleDetail.vue"),
+  },
+  {
+    path: "*",
+    component: () => import("@/views/Loayout/NotFound"),
+  },
 ];
 
 const router = new VueRouoter({

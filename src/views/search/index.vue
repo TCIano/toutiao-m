@@ -17,11 +17,12 @@
     <!-- <SearchHistory></SearchHistory>
     <SearchSuggestion></SearchSuggestion>
     <SearchResult></SearchResult> -->
-    <component :is="componentId" :keywords="keywords"></component>
+    <component :is="componentId" :keywords="keywords" @selectSugestion="selectSugestion"></component>
   </div>
 </template>
 
 <script>
+
 import SearchHistory from "./components/SearchHistory.vue";
 import SearchSuggestion from "./components/SearchSuggestion.vue";
 import SearchResult from "./components/SearchResult.vue";
@@ -30,6 +31,7 @@ export default {
     return {
       keywords: "",
       isShowSearchResult: false, //搜索结果的状态
+      suggestion:''//点击获取的搜索建议
     };
   },
   components: {
@@ -54,12 +56,20 @@ export default {
       console.log("sousuo");
       //点击让搜索结果状态改变
       this.isShowSearchResult = true;
+      //存储搜索历史
+      this.$store.commit('setSearchHistory',this.keywords)
     },
     //聚焦显示搜索建议
     visibleSearchSuggestion() {
       //聚焦时候让搜索结果隐藏
       this.isShowSearchResult = false;
     },
+    //点击建议覆盖搜索关键词
+    selectSugestion(suggestion){
+      this.keywords = suggestion
+      //转到搜索结果
+      this.isShowSearchResult = true;
+    }
   },
 };
 </script>
