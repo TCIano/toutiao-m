@@ -23,27 +23,42 @@
             <p class="comment">{{ item.content }}</p>
             <div class="data">
               <span class="time">{{ item.pubdate | dateFilter }}</span>
-              <van-button class="reply" @click="replyComment">回复 {{ item.reply_count }}</van-button>
+              <van-button class="reply" @click="replyComment(item)"
+                >回复 {{ item.reply_count }}</van-button
+              >
               <!-- 回复评论弹出层 -->
-              <van-popup v-model="showReplyComment" position="bottom" :style="{ height: '100%' }">
-                    <replyComment></replyComment>
-              </van-popup>
             </div>
           </van-col>
-          <van-col span="6" class="follow">
-            <van-icon name="good-job-o">
+          <van-col span="6" class="follow" @click="isLiking(item)">
+            <van-icon
+              :name="item.is_liking ? 'good-job' : 'good-job-o'"
+              :color="item.is_liking ? 'red' : ''"
+            >
               {{ item.like_count || "点赞" }}</van-icon
             >
           </van-col>
         </van-row>
       </van-cell>
+      <van-popup
+        v-model="showReplyComment"
+        position="bottom"
+        :style="{ height: '100%' }"
+      >
+        <replyComment
+          @hidePop="hidePop"
+          :replyConn="commitList[replyCommentIndex]"
+          :replyCommentList="replyCommentList"
+          :replyendCommentId="replyendCommentId"
+          @addreplyCommentList="addreplyCommentList"
+        ></replyComment>
+      </van-popup>
     </van-list>
   </div>
 </template>
 
 <script>
-import replyComment from '../component/replyComment.vue'
-import { getAllComments } from "@/api";
+import replyComment from "./replyComment.vue";
+import { getAllComments, isLikeComment,unLikeComment } from "@/api";
 export default {
   data() {
     return {
@@ -51,40 +66,24 @@ export default {
       loading: false,
       finished: false,
       endCommentId: null, //每次传递数据的最后一条评论id
-      showReplyComment:false//展示回复 评论弹窗
+      showReplyComment: false, //展示回复 评论弹窗
+      replyCommentIndex: null,
+      replyendCommentId: null,
+      replyCommentList: [],
     };
   },
-  components:{
-    replyComment
+  components: {
+    replyComment,
   },
-  props:{
+  props: {
     //添加的评论内容
-    commitList:{
-      type:Array,
+    commitList: {
+      type: Array,
       // required:true
-    }
+    },
   },
-  // watch:{
-  //   //监听comitlist
-  //   commitList:{
-  //     deep:true,
-  //     immediate:true,
-  //     handler(n,o){
-  //       this.commitList = n
-  //       console.log(this.commitList);
-  //       console.log(n);
-  //       // console.log(this.commitList);
-  //     }
-  //   }
-  // },
-  created() {
-    // this.getAllComments();
-    //如果添加的有新内容 那就先把新加的评论 加到评论列表前面
-        // if(this.newAddComment.new_obj !== ''){
-        //   console.log(this.newAddComment.new_obj);
-        //   this.commitList.unshift(this.newAddComment.new_obj)
-        // }
-  },
+
+  created() {},
   methods: {
     // async getAllComments() {
     //   try {
@@ -111,9 +110,9 @@ export default {
           type: "a",
           source: this.$store.state.articleId,
           offset: this.endCommentId,
-          limit: 5,
+          limit:5
         });
-        
+
         this.commitList.push(...data.results);
         console.log(data);
         if (data.results.length) {
@@ -127,13 +126,91 @@ export default {
       } finally {
         //最后加载结束
         this.loading = false;
-
       }
     },
     //回复评论弹窗
-    replyComment(){
-      this.showReplyComment = true
-    }
+    async replyComment(com) {
+      this.showReplyComment = true;
+      // console.log(comId);
+      const index = this.commitList.findIndex((item) => {
+        return item.com_id === com.com_id;
+      });
+      // console.log(index);
+      this.replyCommentIndex = index;
+      console.log(com);
+      console.log(com.com_id);
+      // console.log(commitList[replyCommentIndex]);
+      try {
+        const {
+          data: { data },
+        } = await getAllComments({
+          type: "c",
+          source: com.com_id,
+          offset: this.replyendCommentId,
+          limit:20
+        });
+        if(data.results === []){
+         return this.finished = true
+
+        }else {
+          this.replyendCommentId = data.last_id;
+
+          this.replyCommentList = data.results ;
+        }
+        
+        console.log(this.replyCommentList);
+        // console.log(this.replyendCommentId);
+        // this.commitList = data.results
+      } catch (error) {
+        this.$toast.fail("获取评论回复失败");
+      }finally {
+        this.loading = false
+      }
+      // this.replyendCommentId = null;
+    },
+    //添加数据
+    addreplyCommentList(data,id){
+      console.log(data,id);
+      this.replyCommentList.push(...data)
+      this.replyendCommentId = id
+    },
+    //隐藏弹窗
+    hidePop() {
+      this.showReplyComment = false;
+    },
+    //点赞评论
+    async isLiking(com) {
+      if (!com.is_liking) {
+        //如果为false 就说明没点赞，可以点赞
+        try {
+          console.log(com);
+          const res = await isLikeComment(com.com_id);
+          console.log(res);
+          if (res.status === 201) {
+            this.$toast.success(`对 ${com.aut_name} 点赞成功`);
+            //点赞成功让当前点赞数+1
+            com.like_count++
+
+          }
+        } catch (error) {
+          this.$toast.fail("点赞失败");
+        }
+      }else {
+        //如果为true，说明 点赞了，就取消
+          try {
+             await unLikeComment(com.com_id)
+            
+              this.$toast.success(`对 ${com.aut_name} 取消点赞`);
+            com.like_count--
+
+          } catch (error) {
+            this.$toast.fail('取消点赞失败')
+          }
+
+      }
+      // 点赞或者取消点赞都改变 他的状态
+      com.is_liking = !com.is_liking
+    },
   },
   //格式化时间
   // computed: {
@@ -154,58 +231,58 @@ export default {
   // padding-bottom: px;
   height: 100%;
   // overflow-y: scroll; height: 100%;
- .van-list {
+  .van-list {
     margin-bottom: 50px;
     height: calc(100vh - 100px);
     .van-list__finished-text {
       margin-bottom: 30px;
     }
-   .row {
-    margin: 0px;
-    .avator {
-      // padding-left: 20px;
-    }
-    .name {
-      p.auth {
-        margin-top: 5px;
-        font-size: 20px;
-        color: #407dc4;
+    .row {
+      margin: 0px;
+      .avator {
+        // padding-left: 20px;
       }
-      p.comment {
-        font-size: 40px;
-      }
-      .data {
-        margin-top: -15px;
-        height: 80px;
-        padding-top: 0px;
-        line-height: 80px;
-        span.time {
-          // margin-top: 5px;
-          padding-top: 15px;
-          font-size: 15px !important;
+      .name {
+        p.auth {
+          margin-top: 5px;
+          font-size: 20px;
+          color: #407dc4;
         }
-        .reply.van-button {
-          font-size: 15px;
-          margin-top: 10px;
+        p.comment {
+          font-size: 40px;
+        }
+        .data {
+          margin-top: -15px;
+          height: 80px;
           padding-top: 0px;
-          margin-left: 15px;
-          border-radius: 50px;
-          width: 150px;
-          height: 50px;
+          line-height: 80px;
+          span.time {
+            // margin-top: 5px;
+            padding-top: 15px;
+            font-size: 15px !important;
+          }
+          .reply.van-button {
+            font-size: 15px;
+            margin-top: 10px;
+            padding-top: 0px;
+            margin-left: 15px;
+            border-radius: 50px;
+            width: 150px;
+            height: 50px;
+          }
         }
       }
-    }
-    .follow {
-      padding-right: 30px;
-      font-size: 30px;
-      .van-button {
-        // line-height: 70px;
-        margin-top: 15px;
-        width: 200px;
-        height: 70px;
+      .follow {
+        padding-right: 30px;
+        font-size: 30px;
+        .van-button {
+          // line-height: 70px;
+          margin-top: 15px;
+          width: 200px;
+          height: 70px;
+        }
       }
     }
   }
- }
 }
 </style>

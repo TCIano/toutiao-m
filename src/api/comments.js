@@ -33,3 +33,25 @@ export const addCommit = (target, content, art_id) => {
     },
   });
 };
+
+/**
+ *  对评论或者评论回复点赞
+ * @param {String} target 点赞的评论id
+ * @returns
+ */
+export const isLikeComment = (target) => {
+  return request({
+    method: "POST",
+    url: "/v1_0/comment/likings",
+    data: {
+      target,
+    },
+  });
+};
+
+export const unLikeComment = (target) => {
+  return request({
+    method: "DELETE",
+    url: `/v1_0/comment/likings/${target}`,
+  });
+};
