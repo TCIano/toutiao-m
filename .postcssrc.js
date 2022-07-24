@@ -13,6 +13,7 @@ module.exports = {
         }
       },
       propList: ["*"],
+      exclude: "github-markdown",
     },
   },
 };

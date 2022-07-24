@@ -12,7 +12,7 @@
           </template>
           
         </van-cell>
-        <van-cell v-for="history,index in $store.state.searchHistory" :key="index">
+        <van-cell v-for="history,index in $store.state.searchHistory" :key="index" @click="clickSearchHistory(history)">
           <template #title>
             <span >{{history}}</span>
           </template>
@@ -39,10 +39,13 @@
         this.$store.commit('removeSearchHistory')
       },
       //删除单个历史
-
       deleteSingleHistory(index){
         console.log(index);
         this.$store.state.searchHistory.splice(index,1)
+      },
+      //点击搜索历史覆盖文本框
+      clickSearchHistory(historyContent){
+        this.$emit('clickSearchHistory',historyContent)
       }
     },
   };

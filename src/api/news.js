@@ -28,3 +28,52 @@ export const getArticleDetail = (article_id) => {
     url: `/v1_0/articles/${article_id}`,
   });
 };
+
+/**
+ * 收藏文章
+ * @param {Number} target 所要收藏的文章id
+ * @returns
+ */
+export const newsCollect = (target) => {
+  return request({
+    method: "POST",
+    url: "/v1_0/article/collections",
+    data: {
+      target,
+    },
+  });
+};
+
+/**
+ *  取消对文章的收藏
+ * @param {String} target 目标文章的id
+ * @returns
+ */
+export const unNewsCollect = (target) => {
+  return request({
+    method: "DELETE",
+    url: `/v1_0/article/collections/${target}`,
+  });
+};
+
+/**
+ *  点赞文章
+ * @param {String} target
+ * @returns
+ */
+export const likeArticle = (target) => {
+  return request({
+    method: "POST",
+    url: "/v1_0/article/likings",
+    data: {
+      target,
+    },
+  });
+};
+
+export const unLikeArticle = (target) => {
+  return request({
+    method: "DELETE",
+    url: `/v1_0/article/likings/${target}`,
+  });
+};

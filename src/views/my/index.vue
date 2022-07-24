@@ -149,6 +149,7 @@ export default {
       } = await getUserInfo()
       this.userInfo = data
     }
+    console.log(data);
   }
 
   },

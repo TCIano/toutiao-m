@@ -8,6 +8,7 @@
         @search="onSearch"
         @cancel="$router.go(-1)"
         @focus="visibleSearchSuggestion"
+       
         background="#3296fa"
         class="search"
       />
@@ -17,7 +18,7 @@
     <!-- <SearchHistory></SearchHistory>
     <SearchSuggestion></SearchSuggestion>
     <SearchResult></SearchResult> -->
-    <component :is="componentId" :keywords="keywords" @selectSugestion="selectSugestion"></component>
+    <component :is="componentId" :keywords="keywords" @selectSugestion="selectSugestion"  @clickSearchHistory="clickSearchHistory"></component>
   </div>
 </template>
 
@@ -69,6 +70,11 @@ export default {
       this.keywords = suggestion
       //转到搜索结果
       this.isShowSearchResult = true;
+    },
+    //点击搜索历史覆盖关键词
+    clickSearchHistory(historyContent){
+      // console.log(historyContent);
+      this.keywords = historyContent
     }
   },
 };

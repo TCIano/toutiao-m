@@ -33,3 +33,16 @@ export const getArticleId = () => {
 export const setArticleId = (ariticleId) => {
   storage.set(ARTICLE_ID, ariticleId);
 };
+
+//存储被关注用户
+const FOLLOW_ID = "followedId";
+export const getfollowedId = () => {
+  return storage.get(FOLLOW_ID);
+};
+
+export const setfollowedId = (followedId) => {
+  storage.set(FOLLOW_ID, followedId);
+};
+export const removefollowedID = () => {
+  storage.set(FOLLOW_ID);
+};

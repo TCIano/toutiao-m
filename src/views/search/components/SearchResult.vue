@@ -9,7 +9,7 @@
     >
       <van-cell v-for="item in searchResults" :key="item.art_id">
         <template #title>
-          <span v-html="item.title"></span>
+          <span v-html="item.title" @click="$router.push(`/detail/${item.art_id}`)"></span>
         </template>
         <template #icon>
           <van-icon name="search" class="search-icon"></van-icon>
