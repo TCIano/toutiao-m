@@ -24,6 +24,10 @@ export const validateCode = (mobile) => {
   });
 };
 
+/**
+ * 获取用户自己信息
+ * @returns
+ */
 export const getUserInfo = () => {
   return request({
     url: "/v1_0/user",
