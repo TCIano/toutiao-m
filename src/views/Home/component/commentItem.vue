@@ -34,7 +34,7 @@
               :name="item.is_liking ? 'good-job' : 'good-job-o'"
               :color="item.is_liking ? 'red' : ''"
             >
-              {{ item.like_count || "点赞" }}</van-icon
+              {{ item.is_liking ? item.like_count : "点赞" }}</van-icon
             >
           </van-col>
         </van-row>
@@ -58,7 +58,7 @@
 
 <script>
 import replyComment from "./replyComment.vue";
-import { getAllComments, isLikeComment,unLikeComment } from "@/api";
+import { getAllComments, isLikeComment, unLikeComment } from "@/api";
 export default {
   data() {
     return {
@@ -110,7 +110,7 @@ export default {
           type: "a",
           source: this.$store.state.articleId,
           offset: this.endCommentId,
-          limit:5
+          limit: 5,
         });
 
         this.commitList.push(...data.results);
@@ -147,32 +147,31 @@ export default {
           type: "c",
           source: com.com_id,
           offset: this.replyendCommentId,
-          limit:20
+          limit: 20,
         });
-        if(data.results === []){
-         return this.finished = true
-
-        }else {
+        if (data.results === []) {
+          return (this.finished = true);
+        } else {
           this.replyendCommentId = data.last_id;
 
-          this.replyCommentList = data.results ;
+          this.replyCommentList = data.results;
         }
-        
+
         console.log(this.replyCommentList);
         // console.log(this.replyendCommentId);
         // this.commitList = data.results
       } catch (error) {
         this.$toast.fail("获取评论回复失败");
-      }finally {
-        this.loading = false
+      } finally {
+        this.loading = false;
       }
       // this.replyendCommentId = null;
     },
     //添加数据
-    addreplyCommentList(data,id){
-      console.log(data,id);
-      this.replyCommentList.push(...data)
-      this.replyendCommentId = id
+    addreplyCommentList(data, id) {
+      console.log(data, id);
+      this.replyCommentList.push(...data);
+      this.replyendCommentId = id;
     },
     //隐藏弹窗
     hidePop() {
@@ -189,27 +188,24 @@ export default {
           if (res.status === 201) {
             this.$toast.success(`对 ${com.aut_name} 点赞成功`);
             //点赞成功让当前点赞数+1
-            com.like_count++
-
+            com.like_count++;
           }
         } catch (error) {
           this.$toast.fail("点赞失败");
         }
-      }else {
+      } else {
         //如果为true，说明 点赞了，就取消
-          try {
-             await unLikeComment(com.com_id)
-            
-              this.$toast.success(`对 ${com.aut_name} 取消点赞`);
-            com.like_count--
+        try {
+          await unLikeComment(com.com_id);
 
-          } catch (error) {
-            this.$toast.fail('取消点赞失败')
-          }
-
+          this.$toast.success(`对 ${com.aut_name} 取消点赞`);
+          com.like_count--;
+        } catch (error) {
+          this.$toast.fail("取消点赞失败");
+        }
       }
       // 点赞或者取消点赞都改变 他的状态
-      com.is_liking = !com.is_liking
+      com.is_liking = !com.is_liking;
     },
   },
   //格式化时间

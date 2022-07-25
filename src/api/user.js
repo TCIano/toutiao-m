@@ -59,3 +59,46 @@ export const unFollowing = (target) => {
     url: `/v1_0/user/followings/${target}`,
   });
 };
+
+/**
+ * 获取用户个人资料
+ * @returns Promise
+ */
+export const getProfileInfo = () => {
+  return request({
+    url: "/v1_0/user/profile",
+  });
+};
+
+//  /v1_0/user/profile
+/**
+ *
+ * @param {Object} data {
+ *    name 昵称
+ *    gender 性别，0-男，1-女
+ *    birthday 生日，格式'2018-12-20'
+ *    real_name 姓名
+ *    intro 个人介绍
+ * }
+ * @returns
+ */
+export const editUserInfo = (data) => {
+  return request({
+    method: "PATCH",
+    url: "/v1_0/user/profile",
+    data,
+  });
+};
+
+/**
+ *  编辑个人头像
+ * @param {file} data formdata格式
+ * @returns
+ */
+export const editUserAvator = (data) => {
+  return request({
+    url: "/v1_0/user/photo",
+    method: "PATCH",
+    data,
+  });
+};

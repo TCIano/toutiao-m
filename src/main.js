@@ -7,6 +7,8 @@ import router from "@/router/index";
 import "./styles/index.less";
 import "@/assets/fonts/iconfont.css";
 import store from "./store";
+import "cropperjs/dist/cropper.css";
+
 // 加载动态设置 REM 基准值
 import "amfe-flexible";
 Vue.use(Vant);
