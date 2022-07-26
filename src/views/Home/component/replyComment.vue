@@ -5,51 +5,51 @@
     </van-nav-bar>
     <!-- 回复区域  -->
     <main>
-      <div class="my">
-        <van-cell>
-          <van-row class="row">
-            <!-- 头像 -->
-            <van-col span="4" class="avator">
-              <van-image
-                round
-                width="1.2rem"
-                height="1.2rem"
-                :src="replyConn.aut_photo"
-              />
-            </van-col>
-            <van-col span="14" class="name">
-              <p class="auth">{{ replyConn.aut_name }}</p>
-              <p class="comment">{{ replyConn.content }}</p>
-              <div class="data">
-                <span class="time">{{ replyConn.pubdate | dateFilter }}</span>
-                <van-button class="reply"
-                  >回复 {{ replyConn.reply_count }}</van-button
-                >
-              </div>
-            </van-col>
-            <van-col span="6" class="follow">
-              <van-icon
-                :name="replyConn.is_liking ? 'good-job' : 'good-job-o'"
-                :color="replyConn.is_liking ? 'red' : ''"
-              >
-                {{ replyConn.like_count || "点赞" }}</van-icon
-              >
-            </van-col>
-          </van-row>
-        </van-cell>
-      </div>
-      <van-cell title="全部回复"></van-cell>
-
-      <!-- 回复评论列表 -->
-      <!-- <commentItemVue :commitList="[1]"> </commentItemVue> -->
       <van-list
         ref="list"
         v-model="loading"
         :finished="finished"
         finished-text="没有更多了"
         @load="onLoad"
-        offset="1"
       >
+        <div class="my">
+          <van-cell>
+            <van-row class="row">
+              <!-- 头像 -->
+              <van-col span="4" class="avator">
+                <van-image
+                  round
+                  width="1.2rem"
+                  height="1.2rem"
+                  :src="replyConn.aut_photo"
+                />
+              </van-col>
+              <van-col span="14" class="name">
+                <p class="auth">{{ replyConn.aut_name }}</p>
+                <p class="comment">{{ replyConn.content }}</p>
+                <div class="data">
+                  <span class="time">{{ replyConn.pubdate | dateFilter }}</span>
+                  <van-button class="reply"
+                    >回复 {{ replyConn.reply_count }}</van-button
+                  >
+                </div>
+              </van-col>
+              <van-col span="6" class="follow">
+                <van-icon
+                  :name="replyConn.is_liking ? 'good-job' : 'good-job-o'"
+                  :color="replyConn.is_liking ? 'red' : ''"
+                >
+                  {{ replyConn.like_count || "点赞" }}</van-icon
+                >
+              </van-col>
+            </van-row>
+          </van-cell>
+        </div>
+        <van-cell title="全部回复"></van-cell>
+
+        <!-- 回复评论列表 -->
+        <!-- <commentItemVue :commitList="[1]"> </commentItemVue> -->
+
         <van-cell v-for="(item, index) in replyCommentList" :key="index">
           <van-row class="row">
             <!-- 头像 -->
@@ -107,7 +107,8 @@ export default {
       loading: false,
       finished: false,
       commitList: [],
-      // replyendCommentId:'',
+      // replyCommentList: [],
+      // replyendCommentId: null,
       showAddCommentPop: false,
     };
   },
@@ -120,7 +121,7 @@ export default {
       type: Array,
     },
     replyendCommentId: {
-      type: String,
+      required: true,
     },
   },
   components: {
@@ -137,16 +138,16 @@ export default {
           type: "c",
           source: this.replyConn.com_id,
           offset: this.replyendCommentId,
-          limit: 20,
+          limit: 10,
         });
         console.log(data.results.length);
         // console.log(data);
+        this.replyCommentList.push(...data.results);
         if (data.end_id !== data.last_id && data.results.length !== 0) {
           // this.replyCommentList.push(...data.results);
-          // this.replyendCommentId = data.last_id;
-          // console.log(this.replyendCommentId);
-
-          this.$emit("addreplyCommentList", data.results, data.last_id);
+          this.replyendCommentId = data.last_id;
+          console.log(this.replyendCommentId);
+          // this.$emit("addreplyCommentList", data.results, data.last_id);
         } else {
           return (this.finished = true);
         }
@@ -201,6 +202,7 @@ export default {
   },
   created() {
     // console.log(this.replyConn);
+    console.log(this.replyendCommentId);
   },
 };
 </script>

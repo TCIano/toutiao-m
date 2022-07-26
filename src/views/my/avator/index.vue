@@ -27,37 +27,57 @@ export default {
   methods: {
     hidePop() {
       this.$emit("hidePop");
+      this.$emit("des", this);
+      this.myCropper.destroy();
     },
-
+    //初始化裁剪
+    init() {
+      this.myCropper = new Cropper(this.$refs.image, {
+        viewMode: 3,
+        dragMode: "move",
+        aspectRatio: 1,
+        autoCropArea: 1,
+        background: false,
+        movable: true,
+      });
+      console.log(this);
+    },
     cutImg() {
       try {
         //拿到裁剪后的base64的图片
-        this.myCropper.getCroppedCanvas().toBlob(async function (blob) {
+        this.myCropper.getCroppedCanvas().toBlob(async (blob) => {
           const fm = new FormData();
           fm.append("photo", blob);
 
           //   uploadPhoto(fm);
           //   调用接口更新数据
           const { data } = await editUserAvator(fm);
+          this.imgof = data.data.photo;
           //更新视图
-          this.$emit("newImg", data.data.photo);
+          this.$emit("newImg", data.data.photo, this.myCropper);
+          //销毁
         });
         //退出视图
         this.$emit("hidePop");
         this.$toast.success("更新成功");
-      } catch (error) {}
+        this.$refs.image.value = "";
+        this.myCropper.destroy();
+        this.$emit("des", this);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
-  mounted() {
-    this.myCropper = new Cropper(this.$refs.image, {
-      viewMode: 3,
-      dragMode: "move",
-      aspectRatio: 1,
-      autoCropArea: 1,
-      background: false,
-      movable: true,
-    });
+  created() {
+    if (!this.myCropper) {
+      console.log(111);
+      this.init();
+    }
   },
+  mounted() {
+    this.init();
+  },
+  destroyed() {},
 };
 </script>
 

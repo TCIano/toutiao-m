@@ -17,7 +17,12 @@
       <!-- 弹出层 -->
       <van-popup v-model="showPop" style="height: 100%" position="bottom">
         <!-- 裁剪图片区域 -->
-        <avator :img="img" @hidePop="hidePop" @newImg="newImg"></avator>
+        <avator
+          :img="img"
+          @hidePop="hidePop"
+          @newImg="newImg"
+          @des="des"
+        ></avator>
       </van-popup>
     </div>
     <!-- 昵称 -->
@@ -154,29 +159,41 @@ export default {
     },
     //监听输入框change事件
     inputChange() {
+      // console.log(this);
+
       let file = this.$refs.iptAva.files[0];
       // // 转化图片格式
       // const fr = new FileReader();
       // // 读取二进制数据，并将其编码为 base64 的 data url。
       // fr.readAsDataURL(file);
       // //  读取完成，没有 error。
-      // fr.onload = () => {
-      //   file = fr.result;
+      // fr.onload = (e) => {
+      //   file = e.target.result;
       //   this.img = file;
       // };
       this.img = window.URL.createObjectURL(file);
       //传递给子组件
       this.showPop = true;
+      console.log(this.$refs.iptAva.value);
       this.$refs.iptAva.value = "";
     },
     //隐藏头像弹出层
     hidePop() {
       this.showPop = false;
+      // this.img = "";
     },
     //更新头像
     newImg(val) {
       console.log(val);
       this.userInfo.photo = val;
+      this.img = "";
+    },
+    //销毁裁剪对象
+    des(val) {
+      console.log(val);
+      // this.coppThis = val;
+      // val.myCropper.destory();
+      console.log(val);
     },
   },
 };

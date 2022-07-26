@@ -61,7 +61,7 @@
     <footer>
       <div class="comment">
         <van-button size="normal" @click="addComment">写评论</van-button>
-        <van-popup v-model="showAddCommentPop"  position="bottom">
+        <van-popup v-model="showAddCommentPop" position="bottom">
           <!-- 发送评论 -->
           <addComment @closeCommentPop="closeCommentPop"></addComment>
         </van-popup>
@@ -78,7 +78,12 @@
           color="#1989fa"
         />
         <van-icon name="good-job-o" @click="likeArticle" v-if="isLike === -1" />
-        <van-icon name="good-job" color="#1989fa" @click="unLikeArticle" v-else />
+        <van-icon
+          name="good-job"
+          color="#1989fa"
+          @click="unLikeArticle"
+          v-else
+        />
 
         <van-icon name="share" />
       </div>
@@ -88,7 +93,7 @@
 
 <script>
 import dayjs from "@/utils/dayjs";
-import addComment from './component/addComment.vue'
+import addComment from "./component/addComment.vue";
 import commentItem from "./component/commentItem.vue";
 import {
   getArticleDetail,
@@ -102,21 +107,21 @@ import {
 export default {
   data() {
     return {
-      showAddCommentPop:false,//展示评论弹出层
+      showAddCommentPop: false, //展示评论弹出层
       articleDetail: {}, //文章详情
       isShowPop: false,
       authorId: "", //作者id
       //关注按钮加载
       isCollect: "",
       isLoad: false,
-      isLike:-1,
-      followState:false,
-      commitList:[],
+      isLike: -1,
+      followState: false,
+      commitList: [],
     };
   },
   components: {
     commentItem,
-    addComment
+    addComment,
   },
   created() {
     this.getArticleDetail();
@@ -132,7 +137,7 @@ export default {
       this.articleDetail = data;
       this.authorId = data.aut_id;
       //保存关注状态
-      this.followState = data.is_followed
+      this.followState = data.is_followed;
       //保存文章收藏状态
       this.isCollect = data.is_collected;
       this.isLike = data.attitude;
@@ -155,29 +160,28 @@ export default {
     //点击改变加载状态
     async follow() {
       this.isLoad = true;
-        //点击关注
-        const { data } = await following(this.authorId);
-        console.log(data);
-        //把关注作者的id存到本地
-        this.$store.commit("setfollowedId", data.data.target);
-        // this.followState = data.message;
-        console.log(data.message);
-        this.followState = true
-        this.isLoad = false;
-        this.$toast.success('关注成功')
+      //点击关注
+      const { data } = await following(this.authorId);
+      console.log(data);
+      //把关注作者的id存到本地
+      this.$store.commit("setfollowedId", data.data.target);
+      // this.followState = data.message;
+      console.log(data.message);
+      this.followState = true;
+      this.isLoad = false;
+      this.$toast.success("关注成功");
     },
     //取消关注
     async unfollow() {
-        this.isLoad = true
+      this.isLoad = true;
 
-        //点击取消关注
-        //  取消关注，返回数据为空
-        await unFollowing(this.authorId);
-        this.$store.commit("removefollowedID", this.authorId);
-        this.isLoad = false;
-        this.followState = false
-        this.$toast.success('取消关注')
-
+      //点击取消关注
+      //  取消关注，返回数据为空
+      await unFollowing(this.authorId);
+      this.$store.commit("removefollowedID", this.authorId);
+      this.isLoad = false;
+      this.followState = false;
+      this.$toast.success("取消关注");
     },
     //收藏文章
     async collectArticle() {
@@ -195,29 +199,30 @@ export default {
       this.isCollect = false;
     },
     //喜欢文章
-   async likeArticle() {
-      await likeArticle(this.articleDetail.art_id)
-      this.$toast.success('喜欢成功')
-      this.isLike = 1
+    async likeArticle() {
+      await likeArticle(this.articleDetail.art_id);
+      this.$toast.success("喜欢成功");
+      this.isLike = 1;
     },
     // 取消喜欢
-    async  unLikeArticle(){
-      await unLikeArticle(this.articleDetail.art_id)
-      this.$toast.success('取消喜欢')
-      this.isLike = -1
+    async unLikeArticle() {
+      await unLikeArticle(this.articleDetail.art_id);
+      this.$toast.success("取消喜欢");
+      this.isLike = -1;
     },
     //添加评论
-    addComment(){
-      this.showAddCommentPop = true
+    addComment() {
+      this.showAddCommentPop = true;
     },
     //关闭遮罩
-    closeCommentPop(val){
-      this.showAddCommentPop = false
+    closeCommentPop(val) {
+      this.showAddCommentPop = false;
       //拿到添加的评论内容
       console.log(val);
       //当成数据传递给评论子组件
-      this.commitList.unshift(val.new_obj)
-    }
+      this.commitList.unshift(val.new_obj);
+      this.articleDetail.comm_count++;
+    },
   },
   //格式化时间
   computed: {

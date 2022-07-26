@@ -23,10 +23,9 @@
             <p class="comment">{{ item.content }}</p>
             <div class="data">
               <span class="time">{{ item.pubdate | dateFilter }}</span>
-              <van-button class="reply" @click="replyComment(item)"
-                >回复 {{ item.reply_count }}</van-button
-              >
-              <!-- 回复评论弹出层 -->
+              <van-button class="reply" @click="replyComment(item)">
+                回复 {{ item.reply_count }}
+              </van-button>
             </div>
           </van-col>
           <van-col span="6" class="follow" @click="isLiking(item)">
@@ -39,6 +38,7 @@
           </van-col>
         </van-row>
       </van-cell>
+      <!-- 回复评论弹出层 -->
       <van-popup
         v-model="showReplyComment"
         position="bottom"
@@ -49,8 +49,8 @@
           :replyConn="commitList[replyCommentIndex]"
           :replyCommentList="replyCommentList"
           :replyendCommentId="replyendCommentId"
-          @addreplyCommentList="addreplyCommentList"
-        ></replyComment>
+        >
+        </replyComment>
       </van-popup>
     </van-list>
   </div>
@@ -85,22 +85,6 @@ export default {
 
   created() {},
   methods: {
-    // async getAllComments() {
-    //   try {
-    //     const {
-    //       data: { data },
-    //     } = await getAllComments(
-    //       "a",
-    //       this.$store.state.articleId,
-    //       this.endCommentId,
-    //       10
-    //     );
-    //     this.commitList = data.results;
-    //     this.endCommentId = data.last_id;
-    //   } catch (error) {
-    //     this.$toast.fail("获取评论失败");
-    //   }
-    // },
     //加载更多
     async onLoad() {
       try {
@@ -137,8 +121,8 @@ export default {
       });
       // console.log(index);
       this.replyCommentIndex = index;
-      console.log(com);
-      console.log(com.com_id);
+      // console.log(com);
+      // console.log(com.com_id);
       // console.log(commitList[replyCommentIndex]);
       try {
         const {
@@ -146,19 +130,18 @@ export default {
         } = await getAllComments({
           type: "c",
           source: com.com_id,
-          offset: this.replyendCommentId,
+          offset: null,
           limit: 20,
         });
+        this.replyendCommentId = data.last_id;
+        this.replyCommentList = data.results;
         if (data.results === []) {
-          return (this.finished = true);
+          return;
         } else {
-          this.replyendCommentId = data.last_id;
-
-          this.replyCommentList = data.results;
         }
 
         console.log(this.replyCommentList);
-        // console.log(this.replyendCommentId);
+        console.log(this.replyendCommentId);
         // this.commitList = data.results
       } catch (error) {
         this.$toast.fail("获取评论回复失败");
@@ -168,11 +151,11 @@ export default {
       // this.replyendCommentId = null;
     },
     //添加数据
-    addreplyCommentList(data, id) {
-      console.log(data, id);
-      this.replyCommentList.push(...data);
-      this.replyendCommentId = id;
-    },
+    // addreplyCommentList(data, id) {
+    //   console.log(data, id);
+    //   this.replyCommentList.push(...data);
+    //   this.replyendCommentId = id;
+    // },
     //隐藏弹窗
     hidePop() {
       this.showReplyComment = false;
