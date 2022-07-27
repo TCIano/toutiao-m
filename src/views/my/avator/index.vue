@@ -22,6 +22,7 @@ export default {
   },
   props: {
     img: {
+      type:[String,Object],
       required: true,
     },
   },
@@ -82,8 +83,10 @@ export default {
   width: 100%;
   height: 100%;
   img {
-    width: 100%;
-    height: 100%;
+    // width: 100%;
+    // height: 100%;
+    max-width: 100%;
+    display: block;
   }
   footer {
     position: fixed;

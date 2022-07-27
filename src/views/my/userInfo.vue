@@ -16,7 +16,9 @@
       <!-- 弹出层 -->
       <van-popup v-model="showPop" style="height: 100%" position="bottom">
         <!-- 裁剪图片区域 -->
+        <!-- v-if用来控制头像组件的销毁的隐藏 -->
         <avator
+        v-if="showPop"
           :img="img"
           @hidePop="hidePop"
           @newImg="newImg"
@@ -114,15 +116,15 @@ export default {
       //  读取完成，没有 error。
       fr.onload = (e) => {
         this.img = e.target.result;
-      this.showPop = true;
-     e.target.value = "";
+        this.showPop = true;
+        // e.target.value = "";
       };
       console.log(file);
       // this.img = window.URL.createObjectURL(file);
       // console.log(this.img);
       // //传递给子组件
-    // this.$refs.iptAva.value = ''
-     e.target.value = "";
+      // this.$refs.iptAva.value = ''
+      e.target.value = "";
 
     })
   },
