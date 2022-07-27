@@ -6,6 +6,7 @@
       :columns="columns"
       @confirm="saveGender"
       @cancel="hideGenderPop"
+      :default-index="defaultIndex"
     />
   </div>
 </template>
@@ -16,7 +17,13 @@ export default {
   data() {
     return {
       columns: ["男", "女"],
+      defaultIndex: this.gender === 0 ? 1 : 2,//数据回显
     };
+  },
+  props:{
+    gender:{
+      type:Number
+    }
   },
   methods: {
     hideGenderPop() {

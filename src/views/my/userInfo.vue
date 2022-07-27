@@ -9,7 +9,6 @@
         id=""
         hidden
         ref="iptAva"
-        @change="inputChange"
       />
       <van-cell title="头像" is-link @click="selectAvator">
         <van-image round width="0.9rem" height="0.9rem" :src="userInfo.photo" />
@@ -21,7 +20,6 @@
           :img="img"
           @hidePop="hidePop"
           @newImg="newImg"
-          @des="des"
         ></avator>
       </van-popup>
     </div>
@@ -54,7 +52,7 @@
         position="bottom"
         :style="{ height: '40%' }"
       >
-        <gender @hideGenderPop="hideGenderPop" @newGender="newGender"></gender>
+        <gender @hideGenderPop="hideGenderPop" @newGender="newGender" :gender="userInfo.gender"></gender>
       </van-popup>
     </div>
     <!-- 性别 -->
@@ -69,7 +67,7 @@
         position="bottom"
         :style="{ height: '40%' }"
       >
-        <birth @hideBirthPop="hideBirthPop" @newbirth="newbirth"></birth>
+        <birth @hideBirthPop="hideBirthPop" @newbirth="newbirth" :time="userInfo.birthday"></birth>
       </van-popup>
     </div>
     <!-- 生日 -->
@@ -91,7 +89,7 @@ export default {
       userInfo: {},
       showPop: false,
       // newNick: "",
-      img: "", //点击的图图片
+      img: null, //点击的图图片
     };
   },
 
@@ -103,6 +101,33 @@ export default {
   },
   created() {
     this.getProfileInfo();
+  },
+  mounted(){
+    this.$refs.iptAva.addEventListener('change',(e) =>{
+       // console.log(this);
+
+      const  file = e.target.files[0];
+      // 转化图片格式
+      const fr = new FileReader();
+      // 读取二进制数据，并将其编码为 base64 的 data url。
+      fr.readAsDataURL(file);
+      //  读取完成，没有 error。
+      fr.onload = (e) => {
+        this.img = e.target.result;
+      this.showPop = true;
+     e.target.value = "";
+      };
+      console.log(file);
+      // this.img = window.URL.createObjectURL(file);
+      // console.log(this.img);
+      // //传递给子组件
+    // this.$refs.iptAva.value = ''
+     e.target.value = "";
+
+    })
+  },
+  destroyed(){
+    this.$refs.iptAva
   },
   methods: {
     //显示昵称弹出层
@@ -158,25 +183,7 @@ export default {
       console.log(this.$refs.iptAva);
     },
     //监听输入框change事件
-    inputChange() {
-      // console.log(this);
-
-      let file = this.$refs.iptAva.files[0];
-      // // 转化图片格式
-      // const fr = new FileReader();
-      // // 读取二进制数据，并将其编码为 base64 的 data url。
-      // fr.readAsDataURL(file);
-      // //  读取完成，没有 error。
-      // fr.onload = (e) => {
-      //   file = e.target.result;
-      //   this.img = file;
-      // };
-      this.img = window.URL.createObjectURL(file);
-      //传递给子组件
-      this.showPop = true;
-      console.log(this.$refs.iptAva.value);
-      this.$refs.iptAva.value = "";
-    },
+    
     //隐藏头像弹出层
     hidePop() {
       this.showPop = false;
@@ -186,15 +193,9 @@ export default {
     newImg(val) {
       console.log(val);
       this.userInfo.photo = val;
-      this.img = "";
+      console.log(this.$refs.iptAva.value);
     },
-    //销毁裁剪对象
-    des(val) {
-      console.log(val);
-      // this.coppThis = val;
-      // val.myCropper.destory();
-      console.log(val);
-    },
+    
   },
 };
 </script>

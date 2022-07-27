@@ -20,8 +20,13 @@ export default {
     return {
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2025, 10, 1),
-      currentDate: "",
+      currentDate: new Date(this.time)
     };
+  },
+  props:{
+    time:{
+      type:String,
+    }
   },
   methods: {
     hideBirthPop() {
